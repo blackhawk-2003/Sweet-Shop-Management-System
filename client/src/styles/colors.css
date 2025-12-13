@@ -1,0 +1,46 @@
+/* Cream & Elegant Color Palette */
+:root {
+  /* Primary Cream Colors */
+  --cream-light: #faf8f3;
+  --cream-soft: #f5f1e8;
+  --cream-warm: #ede8d9;
+  --cream-medium: #e8e0d0;
+  --cream-rich: #d4c4a8;
+  
+  /* Accent Colors */
+  --rose-dust: #d4a5a5;
+  --rose-soft: #e8c5c5;
+  --sage-green: #a5b5a5;
+  --sage-light: #c5d4c5;
+  --gold-accent: #c9a96a;
+  --gold-light: #e8d5b5;
+  
+  /* Text Colors */
+  --text-dark: #3d3d3d;
+  --text-medium: #5a5a5a;
+  --text-light: #7a7a7a;
+  --text-cream: #faf8f3;
+  
+  /* Semantic Colors */
+  --success: #a5b5a5;
+  --success-light: #c5d4c5;
+  --error: #d4a5a5;
+  --error-light: #e8c5c5;
+  --warning: #e8d5b5;
+  --info: #c5d4c5;
+  
+  /* Shadows */
+  --shadow-soft: 0 2px 8px rgba(61, 61, 61, 0.08);
+  --shadow-medium: 0 4px 16px rgba(61, 61, 61, 0.12);
+  --shadow-large: 0 8px 32px rgba(61, 61, 61, 0.16);
+  
+  /* Borders */
+  --border-light: rgba(212, 196, 168, 0.3);
+  --border-medium: rgba(212, 196, 168, 0.5);
+  --border-dark: rgba(212, 196, 168, 0.7);
+  
+  /* Transitions */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease-in-out;
+}
+
