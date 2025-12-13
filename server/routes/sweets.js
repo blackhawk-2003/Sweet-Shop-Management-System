@@ -11,7 +11,9 @@ router.post("/", async (req, res) => {
 
     // Validation
     if (!name || !category || price === undefined || quantity === undefined) {
-      return res.status(400).json({ error: "Name, category, price, and quantity are required" });
+      return res
+        .status(400)
+        .json({ error: "Name, category, price, and quantity are required" });
     }
 
     if (price < 0) {
@@ -36,7 +38,9 @@ router.post("/", async (req, res) => {
     }
     // Handle MongoDB duplicate key error
     if (error.code === 11000) {
-      return res.status(400).json({ error: "Sweet with this name already exists" });
+      return res
+        .status(400)
+        .json({ error: "Sweet with this name already exists" });
     }
     console.error("Create sweet error:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -96,6 +100,104 @@ router.get("/search", async (req, res) => {
   }
 });
 
+// POST /api/sweets/:id/purchase - Purchase a sweet, decreasing its quantity
+router.post("/:id/purchase", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const purchaseQuantity = req.body?.quantity ?? 1;
+
+    // Validation
+    if (purchaseQuantity <= 0) {
+      return res
+        .status(400)
+        .json({ error: "Purchase quantity must be greater than 0" });
+    }
+
+    if (!Number.isInteger(purchaseQuantity)) {
+      return res
+        .status(400)
+        .json({ error: "Purchase quantity must be an integer" });
+    }
+
+    // Find the sweet
+    const sweet = await Sweet.findById(id);
+
+    if (!sweet) {
+      return res.status(404).json({ error: "Sweet not found" });
+    }
+
+    // Check if sweet is in stock
+    if (sweet.quantity === 0) {
+      return res.status(400).json({ error: "Sweet is out of stock" });
+    }
+
+    // Check if sufficient quantity is available
+    if (sweet.quantity < purchaseQuantity) {
+      return res.status(400).json({
+        error: `Insufficient stock. Available: ${sweet.quantity}, Requested: ${purchaseQuantity}`,
+      });
+    }
+
+    // Decrease quantity
+    sweet.quantity -= purchaseQuantity;
+    await sweet.save();
+
+    res.status(200).json({
+      message: "Purchase successful",
+      sweet,
+    });
+  } catch (error) {
+    if (error.name === "CastError") {
+      return res.status(400).json({ error: "Invalid sweet ID" });
+    }
+    console.error("Purchase sweet error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// POST /api/sweets/:id/restock - Restock a sweet, increasing its quantity (Admin only)
+router.post("/:id/restock", isAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { quantity: restockQuantity } = req.body;
+
+    // Validation
+    if (!restockQuantity || restockQuantity <= 0) {
+      return res.status(400).json({
+        error: "Restock quantity is required and must be greater than 0",
+      });
+    }
+
+    if (!Number.isInteger(restockQuantity)) {
+      return res
+        .status(400)
+        .json({ error: "Restock quantity must be an integer" });
+    }
+
+    // Find the sweet
+    const sweet = await Sweet.findById(id);
+
+    if (!sweet) {
+      return res.status(404).json({ error: "Sweet not found" });
+    }
+
+    // Increase quantity
+    sweet.quantity += restockQuantity;
+    await sweet.save();
+
+    res.status(200).json({
+      message: "Restock successful",
+      sweet,
+    });
+  } catch (error) {
+    if (error.name === "CastError") {
+      return res.status(400).json({ error: "Invalid sweet ID" });
+    }
+    console.error("Restock sweet error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // PUT /api/sweets/:id - Update a sweet's details
 router.put("/:id", async (req, res) => {
   try {
@@ -138,7 +240,9 @@ router.put("/:id", async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
     if (error.code === 11000) {
-      return res.status(400).json({ error: "Sweet with this name already exists" });
+      return res
+        .status(400)
+        .json({ error: "Sweet with this name already exists" });
     }
     if (error.name === "CastError") {
       return res.status(400).json({ error: "Invalid sweet ID" });
@@ -172,4 +276,3 @@ router.delete("/:id", isAdmin, async (req, res) => {
 });
 
 export default router;
-
