@@ -5,6 +5,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "../routes/auth.js";
 import User from "../models/User.js";
+import Sweet from "../models/Sweet.js";
 
 dotenv.config();
 
@@ -28,6 +29,9 @@ beforeAll(async () => {
         mongoose.connection.once("connected", resolve);
       });
     }
+    // Clean up all collections before auth tests
+    await User.deleteMany({});
+    await Sweet.deleteMany({});
   } catch (error) {
     console.error("Failed to connect to test database:", error.message);
     throw error;

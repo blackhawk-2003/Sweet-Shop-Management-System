@@ -29,8 +29,11 @@ mongoose
 
 // Routes
 import authRoutes from "./routes/auth.js";
+import sweetsRoutes from "./routes/sweets.js";
+import { authenticate } from "./middleware/auth.js";
 
 app.use("/api/auth", authRoutes);
+app.use("/api/sweets", authenticate, sweetsRoutes);
 
 app.get("/", (req, res) => {
   res.send("Sweet Shop Management System API");
