@@ -2,9 +2,10 @@ import {
   createContext,
   useContext,
   useState,
-  useEffect,
-  ReactNode,
+  useMemo,
+  useCallback,
 } from "react";
+import type { ReactNode } from "react";
 import { api } from "../services/api";
 import type { User, RegisterData, LoginData } from "../services/api";
 
@@ -21,58 +22,52 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  // Initialize state from localStorage
+  const getInitialUser = (): User | null => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  };
+
+  const [user, setUser] = useState<User | null>(getInitialUser);
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("token")
   );
-  const [loading, setLoading] = useState(true);
+  const [loading] = useState(false);
 
-  useEffect(() => {
-    // Check if user is logged in on mount
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    }
-
-    setLoading(false);
-  }, []);
-
-  const login = async (data: LoginData) => {
+  const login = useCallback(async (data: LoginData) => {
     const response = await api.login(data);
     setToken(response.token);
     setUser(response.user);
     localStorage.setItem("token", response.token);
     localStorage.setItem("user", JSON.stringify(response.user));
-  };
+  }, []);
 
-  const register = async (data: RegisterData) => {
+  const register = useCallback(async (data: RegisterData) => {
     const response = await api.register(data);
     setToken(response.token);
     setUser(response.user);
     localStorage.setItem("token", response.token);
     localStorage.setItem("user", JSON.stringify(response.user));
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setToken(null);
     setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-  };
+  }, []);
 
-  const isAdmin = () => {
+  const isAdmin = useCallback(() => {
     return user?.role === "admin";
-  };
+  }, [user]);
+
+  const contextValue = useMemo(
+    () => ({ user, token, loading, login, register, logout, isAdmin }),
+    [user, token, loading, login, register, logout, isAdmin]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{ user, token, loading, login, register, logout, isAdmin }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 
