@@ -75,21 +75,31 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
+    // Normalize email to lowercase (since User schema has lowercase: true)
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Find user (include password for comparison)
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email: normalizedEmail }).select(
+      "+password"
+    );
     if (!user) {
+      console.log(`Login failed: User not found for email: ${normalizedEmail}`);
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
     // Check password
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
+      console.log(
+        `Login failed: Invalid password for email: ${normalizedEmail}`
+      );
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
     // Generate token
     const token = generateToken(user);
 
+    console.log(`Login successful for user: ${user.email}`);
     res.status(200).json({
       token,
       user: user.toJSON(),
