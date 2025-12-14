@@ -8,8 +8,10 @@ const JWT_SECRET =
   process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
 // Generate JWT token
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "7d" });
+const generateToken = (user) => {
+  return jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, {
+    expiresIn: "7d",
+  });
 };
 
 // POST /api/auth/register
@@ -34,9 +36,15 @@ router.post("/register", async (req, res) => {
     }
 
     // Create new user
-    const user = new User({ username, email, password });
-    await user.save();
+    const isAdmin = email === process.env.ADMIN_EMAIL;
 
+    const user = new User({
+      username,
+      email,
+      password,
+      role: isAdmin ? "admin" : "user",
+    });
+    await user.save();
     res.status(201).json({
       message: "User registered successfully",
       user: user.toJSON(),
@@ -80,7 +88,7 @@ router.post("/login", async (req, res) => {
     }
 
     // Generate token
-    const token = generateToken(user._id);
+    const token = generateToken(user);
 
     res.status(200).json({
       token,

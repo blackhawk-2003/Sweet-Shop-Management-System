@@ -1,6 +1,6 @@
 import express from "express";
 import Sweet from "../models/Sweet.js";
-import { isAdmin } from "../middleware/auth.js";
+import { authenticate, isAdmin } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -101,7 +101,7 @@ router.get("/search", async (req, res) => {
 });
 
 // POST /api/sweets/:id/purchase - Purchase a sweet, decreasing its quantity
-router.post("/:id/purchase", async (req, res) => {
+router.post("/:id/purchase", authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const purchaseQuantity = req.body?.quantity ?? 1;
@@ -156,7 +156,7 @@ router.post("/:id/purchase", async (req, res) => {
 });
 
 // POST /api/sweets/:id/restock - Restock a sweet, increasing its quantity (Admin only)
-router.post("/:id/restock", isAdmin, async (req, res) => {
+router.post("/:id/restock", authenticate, isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { quantity: restockQuantity } = req.body;
@@ -199,7 +199,7 @@ router.post("/:id/restock", isAdmin, async (req, res) => {
 });
 
 // PUT /api/sweets/:id - Update a sweet's details
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticate, isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, category, price, quantity } = req.body;
@@ -253,7 +253,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE /api/sweets/:id - Delete a sweet (Admin only)
-router.delete("/:id", isAdmin, async (req, res) => {
+router.delete("/:id", authenticate, isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 

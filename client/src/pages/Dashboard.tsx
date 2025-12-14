@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { api } from "../services/api";
 import type { Sweet } from "../services/api";
+import Notification from "../components/Notification";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -13,6 +14,10 @@ const Dashboard = () => {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
   const [purchasing, setPurchasing] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error" | "info";
+  } | null>(null);
 
   useEffect(() => {
     loadSweets();
@@ -69,10 +74,23 @@ const Dashboard = () => {
   const handlePurchase = async (sweetId: string) => {
     try {
       setPurchasing(sweetId);
-      await api.purchaseSweet(sweetId, 1);
+      const response = await api.purchaseSweet(sweetId, 1);
+
+      // Show success notification with the sweet name from response
+      setNotification({
+        message: `🎉 Successfully purchased ${response.sweet.name}! Enjoy your treat!`,
+        type: "success",
+      });
+
       await loadSweets(); // Reload to get updated quantities
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Purchase failed");
+      setNotification({
+        message:
+          err instanceof Error
+            ? err.message
+            : "Purchase failed. Please try again.",
+        type: "error",
+      });
     } finally {
       setPurchasing(null);
     }
@@ -132,6 +150,14 @@ const Dashboard = () => {
       </div>
 
       {error && <div className="error-banner">{error}</div>}
+
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
 
       {loading ? (
         <div className="loading-container">

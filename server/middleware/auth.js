@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const JWT_SECRET =
+  process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
 // Authentication middleware
 export const authenticate = async (req, res, next) => {
@@ -39,4 +40,3 @@ export const isAdmin = (req, res, next) => {
   }
   next();
 };
-
