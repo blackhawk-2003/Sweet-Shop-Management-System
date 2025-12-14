@@ -328,22 +328,26 @@ npm run test:ci -- __tests__/inventory.test.js
 
 ### Login Page
 
-![Login Page](https://via.placeholder.com/800x500/FAF8F3/3D3D3D?text=Login+Page)
+<img width="3807" height="2271" alt="image" src="https://github.com/user-attachments/assets/a451a4c1-3920-41fe-92cb-68d3630e9f47" />
+
 _Beautiful login interface with cream color palette and smooth animations_
 
 ### User Dashboard
 
-![User Dashboard](https://via.placeholder.com/800x500/FAF8F3/3D3D3D?text=User+Dashboard)
+<img width="3125" height="2275" alt="image" src="https://github.com/user-attachments/assets/b9f6a911-3018-4aed-903a-6aa1df70d8b9" />
+
 _Browse and search sweets with real-time stock information_
 
 ### Admin Dashboard
 
-![Admin Dashboard](https://via.placeholder.com/800x500/FAF8F3/3D3D3D?text=Admin+Dashboard)
+<img width="3358" height="2247" alt="image" src="https://github.com/user-attachments/assets/4af1c9aa-8c58-4a7f-a881-c522b06af91b" />
+
 _Complete inventory management interface for administrators_
 
 ### Purchase Flow
 
-![Purchase Flow](https://via.placeholder.com/800x500/FAF8F3/3D3D3D?text=Purchase+Flow)
+<img width="3193" height="1847" alt="image" src="https://github.com/user-attachments/assets/77ddb98e-7ed0-4bcc-bebf-ec43f5c7e9fe" />
+
 _Seamless purchase experience with stock validation_
 
 ---
