@@ -346,7 +346,7 @@ _Complete inventory management interface for administrators_
 
 ### Purchase Flow
 
-<img width="3193" height="1847" alt="image" src="https://github.com/user-attachments/assets/77ddb98e-7ed0-4bcc-bebf-ec43f5c7e9fe" />
+<img width="3624" height="1952" alt="image" src="https://github.com/user-attachments/assets/3d9897fb-fb12-4721-baff-4480c1a4134f" />
 
 _Seamless purchase experience with stock validation_
 
