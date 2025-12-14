@@ -15,19 +15,49 @@ const allowedOrigins = [
   "http://localhost:3000",
 ].filter(Boolean);
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+// Log allowed origins for debugging
+console.log("Allowed CORS origins:", allowedOrigins);
+console.log("FRONTEND_URL from env:", process.env.FRONTEND_URL);
+
+// CORS configuration
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    // Normalize origins for comparison (remove trailing slashes, convert to lowercase)
+    const normalizeOrigin = (url) => {
+      if (!url) return "";
+      return url.toLowerCase().replace(/\/$/, "");
+    };
+
+    const normalizedOrigin = normalizeOrigin(origin);
+
+    // Check if origin exactly matches any allowed origin
+    const exactMatch = allowedOrigins.some((allowed) => {
+      return normalizeOrigin(allowed) === normalizedOrigin;
+    });
+
+    if (exactMatch) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked origin: ${origin}`);
+      console.warn(`Allowed origins: ${allowedOrigins.join(", ")}`);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  exposedHeaders: ["Content-Type", "Authorization"],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Database connection

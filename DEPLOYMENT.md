@@ -16,6 +16,7 @@ This guide will help you deploy the Sweet Shop Management System to production.
 ### Step 1: Prepare Frontend
 
 1. **Ensure your frontend is ready:**
+
    ```bash
    cd client
    npm run build
@@ -31,26 +32,31 @@ This guide will help you deploy the Sweet Shop Management System to production.
 #### Option A: Using Vercel CLI
 
 1. **Install Vercel CLI:**
+
    ```bash
    npm i -g vercel
    ```
 
 2. **Login to Vercel:**
+
    ```bash
    vercel login
    ```
 
 3. **Navigate to client directory:**
+
    ```bash
    cd client
    ```
 
 4. **Deploy:**
+
    ```bash
    vercel
    ```
 
 5. **Follow the prompts:**
+
    - Set up and deploy? **Yes**
    - Which scope? (Select your account)
    - Link to existing project? **No**
@@ -75,6 +81,7 @@ This guide will help you deploy the Sweet Shop Management System to production.
 4. **Import your GitHub repository**
 
 5. **Configure Project:**
+
    - Framework Preset: **Vite**
    - Root Directory: `client`
    - Build Command: `npm run build`
@@ -82,6 +89,7 @@ This guide will help you deploy the Sweet Shop Management System to production.
    - Install Command: `npm install`
 
 6. **Add Environment Variable:**
+
    - Key: `VITE_API_URL`
    - Value: `https://your-backend-url.onrender.com/api`
    - Environment: Production, Preview, Development
@@ -99,6 +107,7 @@ After getting your Vercel URL, update the backend CORS settings (see Backend Dep
 ### Step 1: Prepare Backend
 
 1. **Ensure MongoDB is accessible:**
+
    - Use MongoDB Atlas (recommended)
    - Get your connection string
 
@@ -115,6 +124,7 @@ After getting your Vercel URL, update the backend CORS settings (see Backend Dep
 3. **Connect your GitHub repository**
 
 4. **Configure the service:**
+
    - **Name:** `sweet-shop-api` (or your choice)
    - **Environment:** `Node`
    - **Region:** Choose closest to your users
@@ -126,6 +136,7 @@ After getting your Vercel URL, update the backend CORS settings (see Backend Dep
 
 5. **Add Environment Variables:**
    Click "Add Environment Variable" and add:
+
    ```
    NODE_ENV = production
    PORT = 10000
@@ -153,6 +164,7 @@ After getting your Vercel URL, update the backend CORS settings (see Backend Dep
 5. **Render will automatically detect `render.yaml`**
 
 6. **Add Environment Variables in Render Dashboard:**
+
    - `MONGODB_URI` - Your MongoDB connection string
    - `JWT_SECRET` - A secure secret key (min 32 characters)
    - `FRONTEND_URL` - Your Vercel frontend URL
@@ -166,6 +178,7 @@ After getting your Vercel URL, update the backend CORS settings (see Backend Dep
 2. **Navigate to your project → Settings → Environment Variables**
 
 3. **Update `VITE_API_URL`:**
+
    - Value: `https://your-backend-url.onrender.com/api`
    - Make sure it's set for Production, Preview, and Development
 
@@ -176,6 +189,7 @@ After getting your Vercel URL, update the backend CORS settings (see Backend Dep
 ## 🔄 Post-Deployment Checklist
 
 ### Backend (Render)
+
 - [ ] Service is running and healthy
 - [ ] Environment variables are set correctly
 - [ ] MongoDB connection is working
@@ -183,6 +197,7 @@ After getting your Vercel URL, update the backend CORS settings (see Backend Dep
 - [ ] CORS is configured for frontend URL
 
 ### Frontend (Vercel)
+
 - [ ] Build completes successfully
 - [ ] Environment variable `VITE_API_URL` is set
 - [ ] Frontend can connect to backend API
@@ -190,6 +205,7 @@ After getting your Vercel URL, update the backend CORS settings (see Backend Dep
 - [ ] Authentication flow works
 
 ### Testing
+
 - [ ] Test user registration
 - [ ] Test user login
 - [ ] Test viewing sweets
@@ -202,6 +218,7 @@ After getting your Vercel URL, update the backend CORS settings (see Backend Dep
 ## 🔐 Environment Variables Reference
 
 ### Backend (Render)
+
 ```env
 NODE_ENV=production
 PORT=10000
@@ -211,6 +228,7 @@ FRONTEND_URL=https://your-vercel-app.vercel.app
 ```
 
 ### Frontend (Vercel)
+
 ```env
 VITE_API_URL=https://your-backend-url.onrender.com/api
 ```
@@ -222,15 +240,26 @@ VITE_API_URL=https://your-backend-url.onrender.com/api
 ### Backend Issues
 
 **Problem:** Service fails to start
+
 - Check environment variables are set correctly
 - Verify MongoDB connection string is valid
 - Check Render logs for error messages
 
-**Problem:** CORS errors
-- Ensure `FRONTEND_URL` is set correctly in backend
-- Verify frontend URL matches exactly (including https://)
+**Problem:** CORS errors (Most Common Issue!)
+
+- **Step 1:** Get your exact Vercel frontend URL (e.g., `https://sweet-shop-management-system-e1hk.vercel.app`)
+- **Step 2:** Go to Render Dashboard → Your Service → Environment
+- **Step 3:** Set `FRONTEND_URL` to your Vercel URL **exactly** (no trailing slash):
+  ```
+  FRONTEND_URL=https://your-vercel-app.vercel.app
+  ```
+- **Step 4:** **IMPORTANT:** After updating, click "Save Changes" and **manually trigger a redeploy**
+- **Step 5:** Check Render logs - you should see: "Allowed CORS origins: [your-url]"
+- **Step 6:** If still failing, check browser console for the exact origin being blocked
+- **Note:** The CORS configuration normalizes URLs (removes trailing slashes), but it's best to set it without a trailing slash
 
 **Problem:** MongoDB connection fails
+
 - Check MongoDB Atlas IP whitelist (add `0.0.0.0/0` for Render)
 - Verify connection string credentials
 - Check MongoDB Atlas network access settings
@@ -238,16 +267,19 @@ VITE_API_URL=https://your-backend-url.onrender.com/api
 ### Frontend Issues
 
 **Problem:** API calls fail
+
 - Verify `VITE_API_URL` is set correctly
 - Check browser console for CORS errors
 - Ensure backend is running and accessible
 
 **Problem:** Build fails
+
 - Check for TypeScript errors: `npm run build` locally
 - Verify all dependencies are in `package.json`
 - Check Vercel build logs
 
 **Problem:** Routes not working (404)
+
 - Verify `vercel.json` rewrite rules are correct
 - Check that build output is `dist` directory
 
@@ -272,10 +304,10 @@ VITE_API_URL=https://your-backend-url.onrender.com/api
 ## ✅ Deployment Complete!
 
 Once both services are deployed:
+
 1. Test the full application flow
 2. Share your deployed URLs
 3. Update README with production URLs (optional)
 
 **Frontend URL:** `https://your-app.vercel.app`  
 **Backend URL:** `https://your-api.onrender.com`
-
