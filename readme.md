@@ -19,6 +19,7 @@ A full-stack **Sweet Shop Management System** built with modern web technologies
 ## 📋 Table of Contents
 
 - [Project Overview](#-project-overview)
+- [Live Demo](#-live-demo)
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
@@ -58,6 +59,15 @@ The **Sweet Shop Management System** is a comprehensive full-stack application d
 - Role-based access control
 
 ---
+
+## 🌐 Live Demo
+
+### 🚀 Application
+
+**Frontend (Vercel):** [https://sweet-shop-management-system-e1hk.vercel.app](https://sweet-shop-management-system-e1hk.vercel.app)
+
+**Backend API (Render):** [https://sweet-shop-management-system-1b0m.onrender.com](https://sweet-shop-management-system-1b0m.onrender.com)
+
 
 ## ✨ Features
 
