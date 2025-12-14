@@ -24,9 +24,12 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
 
+    // Normalize email to lowercase (since User schema has lowercase: true)
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Check if user already exists
     const existingUser = await User.findOne({
-      $or: [{ email }, { username }],
+      $or: [{ email: normalizedEmail }, { username: username.trim() }],
     });
 
     if (existingUser) {
@@ -36,15 +39,16 @@ router.post("/register", async (req, res) => {
     }
 
     // Create new user
-    const isAdmin = email === process.env.ADMIN_EMAIL;
+    const isAdmin = normalizedEmail === process.env.ADMIN_EMAIL;
 
     const user = new User({
-      username,
-      email,
-      password,
+      username: username.trim(),
+      email: normalizedEmail,
+      password: password.trim(),
       role: isAdmin ? "admin" : "user",
     });
     await user.save();
+    console.log(`User registered successfully: ${user.email}`);
     res.status(201).json({
       message: "User registered successfully",
       user: user.toJSON(),
@@ -77,6 +81,7 @@ router.post("/login", async (req, res) => {
 
     // Normalize email to lowercase (since User schema has lowercase: true)
     const normalizedEmail = email.toLowerCase().trim();
+    const trimmedPassword = password.trim();
 
     // Find user (include password for comparison)
     const user = await User.findOne({ email: normalizedEmail }).select(
@@ -87,11 +92,32 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
+    // Debug: Check if user has a password field
+    if (!user.password) {
+      console.log(
+        `Login failed: User password field is missing for email: ${normalizedEmail}`
+      );
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
     // Check password
-    const isPasswordValid = await user.comparePassword(password);
+    let isPasswordValid;
+    try {
+      isPasswordValid = await user.comparePassword(trimmedPassword);
+      console.log(
+        `Password comparison result for ${normalizedEmail}: ${isPasswordValid}`
+      );
+    } catch (compareError) {
+      console.error(
+        `Password comparison error for ${normalizedEmail}:`,
+        compareError
+      );
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
     if (!isPasswordValid) {
       console.log(
-        `Login failed: Invalid password for email: ${normalizedEmail}`
+        `Login failed: Invalid password for email: ${normalizedEmail}. Password comparison returned false.`
       );
       return res.status(401).json({ error: "Invalid credentials" });
     }
@@ -106,6 +132,7 @@ router.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
+    console.error("Error stack:", error.stack);
     res.status(500).json({ error: "Internal server error" });
   }
 });
