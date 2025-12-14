@@ -48,9 +48,13 @@ router.post("/register", async (req, res) => {
       role: isAdmin ? "admin" : "user",
     });
     await user.save();
+
+    // Generate token for automatic login after registration
+    const token = generateToken(user);
+
     console.log(`User registered successfully: ${user.email}`);
     res.status(201).json({
-      message: "User registered successfully",
+      token,
       user: user.toJSON(),
     });
   } catch (error) {
